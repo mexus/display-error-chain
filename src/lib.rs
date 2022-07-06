@@ -52,7 +52,7 @@ use std::{error::Error, fmt};
 /// Provides an [fmt::Display] implementation for an error as a chain.
 ///
 /// ```rust
-/// use display_error_chain::DisplayErrorChain;
+/// use display_error_chain::{DisplayErrorChain, ErrorChainExt as _};
 ///
 /// // Let's set up a custom error. Normally one would use `snafu` or
 /// // something similar to avoid the boilerplate.
@@ -94,7 +94,8 @@ use std::{error::Error, fmt};
 /// assert_eq!("Some I/O\nCaused by:\n  -> wow", formatted);
 ///
 /// let no_cause = CustomError::NoCause;
-/// let formatted = DisplayErrorChain::new(&no_cause).to_string();
+/// // You can also use a `.chain()` shortcut from the `ErrorChainExt` trait.
+/// let formatted = no_cause.chain().to_string();
 /// assert_eq!("No cause", formatted);
 /// ```
 pub struct DisplayErrorChain<'a, E: ?Sized>(&'a E);
@@ -129,5 +130,20 @@ where
             source = cause.source();
         }
         Ok(())
+    }
+}
+
+/// An extension trait for [`Error`] types to display their sources in a chain.
+pub trait ErrorChainExt {
+    /// Provides an [fmt::Display] implementation for an error as a chain.
+    fn chain(&self) -> DisplayErrorChain<'_, Self>;
+}
+
+impl<E> ErrorChainExt for E
+where
+    E: Error + ?Sized,
+{
+    fn chain(&self) -> DisplayErrorChain<'_, Self> {
+        DisplayErrorChain::new(self)
     }
 }

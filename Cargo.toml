@@ -1,8 +1,8 @@
 [package]
 name = "display-error-chain"
-version = "0.1.0"
-authors = ["mexus <gilaldpellaeon@gmail.com>"]
-edition = "2018"
+version = "0.1.1"
+authors = ["mexus <null@mexus.xyz>"]
+edition = "2021"
 description = "Formats a standard error and its sources"
 repository = "https://github.com/mexus/display-error-chain.git"
 documentation = "https://docs.rs/display-error-chain"
