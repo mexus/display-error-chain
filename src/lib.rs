@@ -152,6 +152,11 @@ where
     pub fn new(error: E) -> Self {
         DisplayErrorChain(error)
     }
+
+    /// Deconstructs the [`DisplayErrorChain`] and returns the wrapped error.
+    pub fn into_inner(self) -> E {
+        self.0
+    }
 }
 
 impl<E> fmt::Display for DisplayErrorChain<E>
