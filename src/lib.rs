@@ -45,6 +45,30 @@
 //!   -> mid level
 //!   -> low level"
 //! );
+//!
+//! // Or with `.chain()` helper:
+//! use display_error_chain::ErrorChainExt as _;
+//! let formatted = TopLevel.chain().to_string();
+//! assert_eq!(
+//!     formatted,
+//!     "\
+//!top level
+//!Caused by:
+//!   -> mid level
+//!   -> low level"
+//! );
+//!
+//! // Or even with `.into_chain()` helper to consume the error.
+//! use display_error_chain::ErrorChainExt as _;
+//! let formatted = TopLevel.into_chain().to_string();
+//! assert_eq!(
+//!     formatted,
+//!     "\
+//!top level
+//!Caused by:
+//!   -> mid level
+//!   -> low level"
+//! );
 //! ```
 
 use std::{error::Error, fmt};
@@ -100,8 +124,25 @@ pub use result_ext::ResultExt;
 /// // You can also use a `.chain()` shortcut from the `ErrorChainExt` trait.
 /// let formatted = no_cause.chain().to_string();
 /// assert_eq!("No cause", formatted);
+///
+/// // or `.into_chain()` to make the `DisplayErrorChain` to consume the error.
+/// let formatted = no_cause.into_chain().to_string();
+/// assert_eq!("No cause", formatted);
+///
+/// // `from` or `into` will also work with both owned and referenced errors:
+/// let chain: DisplayErrorChain<_> = CustomError::NoCause.into();
+/// assert_eq!("No cause", chain.to_string());
+///
+/// let chain: DisplayErrorChain<_> = (&CustomError::NoCause).into();
+/// assert_eq!("No cause", chain.to_string());
 /// ```
 pub struct DisplayErrorChain<E>(E);
+
+impl<E: Error> From<E> for DisplayErrorChain<E> {
+    fn from(value: E) -> Self {
+        DisplayErrorChain::new(value)
+    }
+}
 
 impl<E> DisplayErrorChain<E>
 where
