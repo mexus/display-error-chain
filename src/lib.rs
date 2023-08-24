@@ -101,21 +101,21 @@ pub use result_ext::ResultExt;
 /// let formatted = no_cause.chain().to_string();
 /// assert_eq!("No cause", formatted);
 /// ```
-pub struct DisplayErrorChain<'a, E: ?Sized>(&'a E);
+pub struct DisplayErrorChain<E>(E);
 
-impl<'a, E> DisplayErrorChain<'a, E>
+impl<E> DisplayErrorChain<E>
 where
-    E: Error + ?Sized,
+    E: Error,
 {
     /// Initializes the formatter with the error provided.
-    pub fn new(error: &'a E) -> Self {
+    pub fn new(error: E) -> Self {
         DisplayErrorChain(error)
     }
 }
 
-impl<'a, E> fmt::Display for DisplayErrorChain<'a, E>
+impl<E> fmt::Display for DisplayErrorChain<E>
 where
-    E: Error + ?Sized,
+    E: Error,
 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)?;
@@ -139,14 +139,26 @@ where
 /// An extension trait for [`Error`] types to display their sources in a chain.
 pub trait ErrorChainExt {
     /// Provides an [fmt::Display] implementation for an error as a chain.
-    fn chain(&self) -> DisplayErrorChain<'_, Self>;
+    fn chain(&self) -> DisplayErrorChain<&Self>;
+
+    /// Same as [`chain`][ErrorChainExt::chain], but consumes `self`.
+    fn into_chain(self) -> DisplayErrorChain<Self>
+    where
+        Self: Sized;
 }
 
 impl<E> ErrorChainExt for E
 where
-    E: Error + ?Sized,
+    E: Error,
 {
-    fn chain(&self) -> DisplayErrorChain<'_, Self> {
+    fn chain(&self) -> DisplayErrorChain<&Self> {
+        DisplayErrorChain::new(self)
+    }
+
+    fn into_chain(self) -> DisplayErrorChain<Self>
+    where
+        Self: Sized,
+    {
         DisplayErrorChain::new(self)
     }
 }
