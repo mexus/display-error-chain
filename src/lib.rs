@@ -49,6 +49,9 @@
 
 use std::{error::Error, fmt};
 
+mod result_ext;
+pub use result_ext::ResultExt;
+
 /// Provides an [fmt::Display] implementation for an error as a chain.
 ///
 /// ```rust
