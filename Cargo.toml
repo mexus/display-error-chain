@@ -1,6 +1,6 @@
 [package]
 name = "display-error-chain"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["mexus <null@mexus.xyz>"]
 edition = "2021"
 description = "Formats a standard error and its sources"
