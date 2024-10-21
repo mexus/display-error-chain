@@ -136,6 +136,13 @@ pub use result_ext::ResultExt;
 /// let chain: DisplayErrorChain<_> = (&CustomError::NoCause).into();
 /// assert_eq!("No cause", chain.to_string());
 /// ```
+///
+/// Other standard traits (like [`Debug`][std::fmt::Debug], [`Clone`] and some
+/// others) are automatically derived for the convenience using the standard
+/// derive macros. If you need another trait, feel free to submit a PR and/or
+/// use the [`DisplayErrorChain::into_inner`] method to access the wrapped
+/// error.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct DisplayErrorChain<E>(E);
 
 impl<E: Error> From<E> for DisplayErrorChain<E> {
